@@ -1,5 +1,7 @@
 # scroll-restorer
 
+🚧🚧 **WORK IN PROGRESS!** 🚧🚧
+
 Preserve scroll state while navigating client-side routes.
 
 ## Influences
