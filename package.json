@@ -1,0 +1,46 @@
+{
+  "name": "@mapbox/scroll-restorer",
+  "version": "0.1.0",
+  "description": "Preserve scroll state while navigating client-side routes",
+  "main": "index.js",
+  "scripts": {
+    "precommit": "lint-staged",
+    "format": "prettier --single-quote --write '{,test/**/}*.js'",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapbox/scroll-restorer.git"
+  },
+  "keywords": [
+    "scroll-restoration",
+    "scroll",
+    "restore",
+    "routing",
+    "router"
+  ],
+  "author": "Mapbox",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mapbox/scroll-restorer/issues"
+  },
+  "homepage": "https://github.com/mapbox/scroll-restorer#readme",
+  "devDependencies": {
+    "eslint": "^4.1.1",
+    "husky": "^0.14.1",
+    "lint-staged": "^4.0.0",
+    "prettier": "^1.5.2"
+  },
+  "lint-staged": {
+    "{,test/**/}*.js": [
+      "eslint",
+      "prettier --single-quote --write",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "debounce": "^1.0.2",
+    "xtend": "^4.0.1"
+  }
+}
