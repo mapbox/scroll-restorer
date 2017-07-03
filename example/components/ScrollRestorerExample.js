@@ -11,7 +11,7 @@ import scrollRestorer from '../../index';
 
 class ScrollRestorerExample extends Component {
   componentDidMount() {
-    scrollRestorer.start();
+    scrollRestorer.start({ autoRestore: true });
   }
 
   componentWillUnmount() {
