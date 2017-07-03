@@ -1,11 +1,21 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 
-const ExampleContainer = props => {
-  return dummyContent[props.match.params.exampleID];
-};
+class ExampleContainer extends Component {
+  componentDidUpdate(prevProps) {
+    // Scroll to top whenever the route changes.
+    if (this.props.location !== prevProps.location) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  render() {
+    return dummyContent[this.props.match.params.exampleID];
+  }
+}
 
 ExampleContainer.propTypes = {
+  location: PropTypes.object,
   match: PropTypes.object
 };
 
