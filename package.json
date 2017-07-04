@@ -8,7 +8,7 @@
     "format": "prettier --single-quote --write '{,test/**/}*.js'",
     "lint": "eslint .",
     "start-example-app": "webpack-dev-server --config ./example/webpack.config.js --content-base ./example",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "eslint": "^4.1.1",
     "eslint-plugin-react": "^7.1.0",
     "husky": "^0.14.1",
+    "jest": "^20.0.4",
     "lint-staged": "^4.0.0",
     "prettier": "^1.5.2",
     "prop-types": "^15.5.10",
@@ -45,6 +46,19 @@
     "react-router-dom": "^4.1.1",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0"
+  },
+  "jest": {
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "html"
+    ],
+    "resetMocks": true,
+    "roots": [
+      "./test"
+    ],
+    "testRegex": ".*\\.test\\.js$"
   },
   "lint-staged": {
     "{,test/**/}*.js": [
