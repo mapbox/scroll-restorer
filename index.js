@@ -1,7 +1,7 @@
 'use strict';
 
-var xtend = require('xtend');
 var debounce = require('debounce');
+var xtend = require('xtend');
 
 var removeListenerFunctions;
 
@@ -11,30 +11,41 @@ function end() {
   }
 }
 
+function getSavedScroll(input) {
+  input = input || window.history;
+  if (!input || !input.state) return;
+  return input.state.scroll;
+}
+
+function restoreScroll(input, attemptsRemaining) {
+  attemptsRemaining = attemptsRemaining == null ? 5 : attemptsRemaining;
+  var savedScroll = getSavedScroll(input);
+  if (!savedScroll) return;
+  window.requestAnimationFrame(function() {
+    var savedX = savedScroll.x;
+    var savedY = savedScroll.y;
+    if (attemptsRemaining === 0) return;
+    var pageXOffset = window.pageXOffset;
+    var pageYOffset = window.pageYOffset;
+    if (
+      savedY < window.document.body.scrollHeight &&
+      (savedX !== pageXOffset || savedY !== pageYOffset)
+    ) {
+      window.scrollTo(savedX, savedY);
+    } else {
+      restoreScroll(input, attemptsRemaining - 1);
+    }
+  });
+}
+
 function start(options) {
   options = xtend(
     {
-      captureScrollDebounce: 50,
-      syncScrollDebounce: 100,
-      syncScrollAttempts: 5
+      autoRestore: false,
+      captureScrollDebounce: 50
     },
-    options
+    options || {}
   );
-
-  if (
-    typeof window === 'undefined' ||
-    window.requestAnimationFrame === undefined ||
-    window.history === undefined
-  ) {
-    return;
-  }
-
-  // cf. https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
-  if ('scrollRestoration' in window.history) {
-    window.history.scrollRestoration = 'manual';
-  }
-
-  var attemptsRemaining = options.syncScrollAttempts;
 
   var captureScroll = debounce(function() {
     window.requestAnimationFrame(function() {
@@ -52,44 +63,37 @@ function start(options) {
     });
   }, options.captureScrollDebounce);
 
-  var syncScroll = debounce(
-    function(input) {
-      if (!input || !input.state || !input.state.scroll) return;
-      var scrollState = input.state.scroll;
-      window.requestAnimationFrame(function() {
-        var savedX = scrollState.x;
-        var savedY = scrollState.y;
-        if (attemptsRemaining < 1) return;
-        if (
-          savedY < window.document.body.scrollHeight &&
-          (savedX !== window.pageXOffset || savedY !== window.pageYOffset)
-        ) {
-          window.scrollTo(savedX, savedY);
-        } else {
-          attemptsRemaining -= 1;
-          syncScroll();
-        }
-      });
-    },
-    options.syncScrollDebounce,
-    true
-  );
+  // cf. https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+  }
 
-  syncScroll(window.history);
+  // Scroll positions are saved into the history entry's state; then when that
+  // the history changes (the popstate event), we try restoring any saved
+  // scroll position.
+
   window.addEventListener('scroll', captureScroll, { passive: true });
-  window.addEventListener('popstate', syncScroll);
+  if (options.autoRestore) {
+    window.addEventListener('popstate', restoreScroll);
+  }
 
   removeListenerFunctions = [
     function() {
-      window.removeEventListener('scroll', captureScroll, { passive: true });
-    },
-    function() {
-      window.removeEventListener('popstate', syncScroll);
+      window.removeEventListener('scroll', captureScroll, {
+        passive: true
+      });
     }
   ];
+  if (options.autoRestore) {
+    removeListenerFunctions.push(function() {
+      window.removeEventListener('popstate', restoreScroll);
+    });
+  }
 }
 
 module.exports = {
   start: start,
-  end: end
+  end: end,
+  restoreScroll: restoreScroll,
+  getSavedScroll: getSavedScroll
 };
