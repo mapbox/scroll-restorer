@@ -71,7 +71,7 @@ class ScrollRestorerExample extends Component {
               </li>
             </ul>
           </nav>
-          <div className="page__body mt72 p24 pt0">
+          <div className="page__body limiter mt60">
             <Route
               exact
               path="/"
