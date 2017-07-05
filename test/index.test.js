@@ -48,7 +48,7 @@ describe('scroll-restorer', function() {
       expect(addEventListenerArgs[0]).toBe('scroll');
     });
 
-    it('adds a scroll event listener with pasive option enabled', function() {
+    it('adds a scroll event listener with passive option enabled', function() {
       scrollRestorer.start();
       var addEventListenerArgs = getWindowModule.getWindow().addEventListener
         .mock.calls[0];
@@ -59,20 +59,23 @@ describe('scroll-restorer', function() {
       scrollRestorer.start({ autoRestore: true });
       // We should have attached popstate and scroll event listeners.
       expect(
-        getWindowModule.getWindow().addEventListener.mock.calls.length
-      ).toBe(2);
-      // The second call should be a popstate listener.
-      var addEventListenerArgs = getWindowModule.getWindow().addEventListener
-        .mock.calls[1];
-      expect(addEventListenerArgs[0]).toBe('popstate');
+        getWindowModule.getWindow().addEventListener
+      ).toHaveBeenCalledTimes(2);
+      // Find the popstate addEventListener call.
+      var popStateListenerCall = getWindowModule
+        .getWindow()
+        .addEventListener.mock.calls.filter(function(callArgs) {
+          return callArgs[0] === 'popstate';
+        });
+      expect(popStateListenerCall.length).toBe(1);
     });
 
     it('does not add a popstate event listener when autoRestore is omitted', function() {
       scrollRestorer.start();
       // We should have attached only a scroll listener.
       expect(
-        getWindowModule.getWindow().addEventListener.mock.calls.length
-      ).toBe(1);
+        getWindowModule.getWindow().addEventListener
+      ).toHaveBeenCalledTimes(1);
       // We should not have attached a popstate listener.
       var addEventListenerArgs = getWindowModule.getWindow().addEventListener
         .mock.calls[0];
