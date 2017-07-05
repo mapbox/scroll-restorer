@@ -79,13 +79,22 @@ describe('scroll-restorer', function() {
       expect(addEventListenerArgs[0]).not.toBe('popstate');
     });
 
-    it('sets history.scrollRestoration to manual', function() {
+    it('sets history.scrollRestoration to manual if property exists', function() {
       expect(getWindowModule.getWindow().history.scrollRestoration).toEqual(
         'foo'
       );
       scrollRestorer.start();
       expect(getWindowModule.getWindow().history.scrollRestoration).toEqual(
         'manual'
+      );
+    });
+
+    it('does not set history.scrollRestoration if property does not exists', function() {
+      delete getWindowModule.getWindow().history.scrollRestoration;
+
+      scrollRestorer.start();
+      expect(getWindowModule.getWindow().history.scrollRestoration).toEqual(
+        undefined
       );
     });
   });
@@ -159,20 +168,14 @@ describe('scroll-restorer', function() {
     it('calls #scrollTo with a position retrieved from state in window.history', function() {
       // We're pretending that a scroll position has been saved previously.
       getWindowModule.getWindow().history.state.scroll = { x: 0, y: 20 };
-
-      scrollRestorer.start();
       scrollRestorer.restoreScroll();
-      scrollRestorer.end();
 
       expect(getWindowModule.getWindow().scrollTo).toHaveBeenCalledWith(0, 20);
     });
 
     it('calls #scrollTo with a position retrieved from a popstate event', function() {
       var popstateEvent = { state: { scroll: { x: 0, y: 40 } } };
-
-      scrollRestorer.start();
       scrollRestorer.restoreScroll(popstateEvent);
-      scrollRestorer.end();
 
       expect(getWindowModule.getWindow().scrollTo).toHaveBeenCalledWith(0, 40);
     });
@@ -189,6 +192,14 @@ describe('scroll-restorer', function() {
       scrollRestorer.end();
 
       expect(getWindowModule.getWindow().scrollTo).not.toHaveBeenCalled();
+    });
+
+    it('returns early if no saved scroll positions exist', function() {
+      getWindowModule.getWindow().requestAnimationFrame = jest.fn();
+      scrollRestorer.restoreScroll({ foo: 'bar' });
+      expect(
+        getWindowModule.getWindow().requestAnimationFrame
+      ).not.toHaveBeenCalled();
     });
   });
 
