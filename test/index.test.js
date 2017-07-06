@@ -55,8 +55,8 @@ describe('scroll-restorer', function() {
       expect(addEventListenerArgs[2]).toEqual({ passive: true });
     });
 
-    it('adds a popstate event listener when autoRestore is enabled', function() {
-      scrollRestorer.start({ autoRestore: true });
+    it('adds a popstate event listener when autoRestore option is omitted', function() {
+      scrollRestorer.start();
       // We should have attached popstate and scroll event listeners.
       expect(
         getWindowModule.getWindow().addEventListener
@@ -70,8 +70,8 @@ describe('scroll-restorer', function() {
       expect(popStateListenerCall.length).toBe(1);
     });
 
-    it('does not add a popstate event listener when autoRestore is omitted', function() {
-      scrollRestorer.start();
+    it('does not add a popstate event listener when autoRestore option is false', function() {
+      scrollRestorer.start({ autoRestore: false });
       // We should have attached only a scroll listener.
       expect(
         getWindowModule.getWindow().addEventListener

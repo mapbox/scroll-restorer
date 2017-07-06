@@ -42,7 +42,7 @@ function restoreScroll(input, attemptsRemaining) {
 function start(options) {
   options = xtend(
     {
-      autoRestore: false,
+      autoRestore: true,
       captureScrollDebounce: 50
     },
     options || {}
