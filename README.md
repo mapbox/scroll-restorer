@@ -11,7 +11,7 @@ An example using React Router may be found at https://github.com/mapbox/scroll-r
 
 ## React & React Router Example
 
-```javascript
+```jsx
 import React, {Component} from 'react';
 import {HashRouter, Link, Route} from 'react-router-dom';
 import scrollRestorer from '@mapbox/scroll-restorer';
