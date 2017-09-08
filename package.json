@@ -1,6 +1,6 @@
 {
   "name": "@mapbox/scroll-restorer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Preserve scroll state while navigating client-side routes",
   "main": "index.js",
   "scripts": {

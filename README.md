@@ -1,13 +1,82 @@
 # @mapbox/scroll-restorer
 
-Preserve the scroll state of [`document.scrollingElement`](https://developer.mozilla.org/en-US/docs/Web/API/Document/scrollingElement) while navigating through history states in client-side routes.
+Preserve the scroll state of [`document.scrollingElement`](https://developer.mozilla.org/en-US/docs/Web/API/Document/scrollingElement) while navigating programmatically through history states — that is, client-side routing.
+
+## Installation
+
+```
+npm install @mapbox/scroll-restorer
+```
 
 ## Usage
 
-1. Invoke the `start` method when you would like to begin storing the browser's scroll position in history states, likely when your application mounts.
-2. Invoke the `stop` method when you would like to stop the restoration of scroll position, likely when your application umounts.
+1. Invoke the [`start`] method when you would like to begin storing the browser's scroll position in history states, likely when your application mounts.
+2. Invoke the [`stop`] method when you would like to stop the restoration of scroll position, likely when your application unmounts.
 
-An example using React Router may be found at https://github.com/mapbox/scroll-restorer/tree/master/example.
+Have a look at [an example using React Router](./example).
+
+## API
+
+### start
+
+`scrollRestorer.start([options])`
+
+Starts tracking the user's scroll position.
+
+#### options
+
+##### autoRestore
+
+Type: `boolean`.
+Default: `true`.
+
+When `true`, `scroll-restorer` will attempt to restore the scroll position on each `popstate` event. Set this to `false` if you want to *manually* control the scroll position restoration (e.g. you may wish to call [`restoreScroll`] at a very specific point in your application's rendering lifecycle).
+
+##### captureScrollDebounce
+
+Type: `number`.
+Default: `50`.
+
+The number of milliseconds by which the scroll-capturing function should be debounced.
+
+### end
+
+`scrollRestorer.end()`
+
+End scroll-restorer's behavior.
+
+### getSavedScroll
+
+`scrollRestorer.getSavedScroll([input])`
+
+Returns the scroll position retrieved from `window.history` or an optional `popstate` event.
+When the [`autoRestore`] option of [`start`] is `true`, this method will be invoked automatically, so you only want to use it manually if you've set [`autoRestore`] to `false`.
+
+#### input
+
+Type: `{ state: Object }`, either `window.history` or a `popstate` event.
+Default: `window.history`.
+
+### restoreScroll
+
+`scrollRestorer.restoreScroll([input, attempts])`
+
+Manually restore the scroll position for a given history state or `popstate` event.
+
+When the [`autoRestore`] option of [`start`] is `true`, this method will be invoked automatically, so you only want to use it manually if you've set [`autoRestore`] to `false`.
+
+#### input
+
+Type: `{ state: Object }`, either `window.history` or a `popstate` event.
+Default: `window.history`.
+
+#### attempts
+
+Type: `number`.
+Default: `5`.
+
+The number of times to attempt adjusting the scroll position.
+scroll-restorer might need to make multiple attempts if the saved scroll state refers to a position that is not yet available because content is still loading.
 
 ## React & React Router Example
 
@@ -63,19 +132,12 @@ class ScrollRestorerExample extends Component {
 export default ScrollRestorerExample;
 ```
 
-## API
-
-`scroll-restorer` exposes a singleton with four methods:
-- `#start`: Start tracking the user's scroll position. It accepts a single optional argument, which is an object that may contain the following properties:
-  - `autoRestore` _(defaults to `true`)_: When `true`, `scroll-restorer` will attempt to restore the scroll position on each `popstate` event. Set this to `false` if you want to control the scroll position restoration manually (e.g. you may wish to call `#restoreScroll` at a very specific point in your application's rendering lifecycle).
-  - `captureScrollDebounce` _(defaults to `50`)_: The number of milliseconds by which the scroll capturing function should be debounced.
-- `#end`: End `scroll-restorer`'s behavior.
-- `#getSavedScroll`: Retrieve the scroll position from `window.history` or an optional `popstate` event, provided as the only argument. When `autoRestore` is `true`, this method will be invoked automatically.
-- `#restoreScroll`: Manually restore the scroll position for a given history state or `popstate` event. When `autoRestore` is `true`, this method will be invoked automatically. `#restoreScroll` accepts two optional arguments:
-  - The history state or `popstate` event from which the scroll position will be retrieved (this value is passed to `#getSavedScroll` and _defaults to `window.history`_).
-  - The number of times to attempt adjusting the scroll position of the browser's viewport _(defaults to `5`)_.
-
 ## Influences
 
 - [delayed-scroll-restoration-polyfill](https://github.com/brigade/delayed-scroll-restoration-polyfill)
 - [scroll-behavior](https://github.com/taion/scroll-behavior)
+
+[`start`]: #start
+[`stop`]: #stop
+[`restoreScroll`]: #restorescroll
+[`autoRestore`]: #autorestore
