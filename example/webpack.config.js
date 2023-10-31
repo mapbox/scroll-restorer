@@ -4,13 +4,31 @@ module.exports = {
   entry: {
     app: ['./example/index.js']
   },
+  devServer: {
+    static: {
+      directory: './example',
+    },
+  },
+  mode: 'development',
   module: {
     rules: [
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         options: {
-          presets: ['es2015', 'stage-0', 'react']
+          presets: [
+            [
+              "@babel/preset-env",
+              {
+                "useBuiltIns": "entry",
+                "corejs": "3.22"
+              }
+            ],
+            ["@babel/preset-react"]
+          ],
+          plugins: [
+            ["@babel/plugin-proposal-function-bind"]
+          ]
         }
       }
     ]
